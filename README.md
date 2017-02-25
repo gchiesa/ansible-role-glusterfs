@@ -1,22 +1,37 @@
-Role Name
-=========
+gchiesa.glusterfs
+=================
 
-A brief description of the role goes here.
+Role that installs glusterfs cluster
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+an extra module can be activated in order to setup the cluster in order to be used by docker swarm 
+
+```
+extra_modules = ["docker"]
+```
+
+The complete list of variables is the following:
+```
+# iptables configuration file
+iptables_config: "/etc/sysconfig/iptables"
+
+extra_modules: []
+# use root to force gluster on the root partition
+gluster_force_root_partition: true
+gluster_volumes:
+    - /glusterfs/brik1/gv0
+```
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+none 
 
 Example Playbook
 ----------------
@@ -25,7 +40,7 @@ Including an example of how to use your role (for instance, with variables passe
 
     - hosts: servers
       roles:
-         - { role: username.rolename, x: 42 }
+         - { role: 'gchiesa.glusterfs', extra_modules: ['docker'] }
 
 License
 -------
