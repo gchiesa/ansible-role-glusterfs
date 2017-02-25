@@ -1,0 +1,33 @@
+---
+- name: Remove the GLUSTERFS chain
+  shell: >
+    ( iptables -t filter -D INPUT -j GLUSTERFS &&
+      iptables -t filter -F GLUSTERFS &&
+      iptables -t filter -X GLUSTERFS) || true
+
+- name: Create the GLUSTERFS chain
+  shell: iptables -t filter -N GLUSTERFS && iptables -t filter -I INPUT 1 -j GLUSTERFS
+
+- name: Open port for GLUSTERFS communication on iptables
+  iptables:
+    table: filter
+    chain: GLUSTERFS
+    destination_port: "{{ item.port }}"
+    protocol: "{{ item.proto }}"
+    state: present
+    jump: ACCEPT
+    comment: "GLUSTERFS for port {{ item.port }}/{{ item.proto }}"
+  with_items:
+    - proto: tcp
+      port: 24007
+    - proto: tcp
+      port: 24008
+    - proto: tcp
+      port: 49152 
+    - proto: tcp
+      port: 111
+    - proto: udp
+      port: 111    
+      
+- name: Iptables save
+  shell: iptables-save > "{{ iptables_config }}"

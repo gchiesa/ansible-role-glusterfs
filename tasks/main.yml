@@ -1,0 +1,24 @@
+---
+# tasks file for ansible-role-glusterfs
+- include: yum.yml
+- include: firewall.yml
+
+- name: enable glusterfs services
+  service: 
+    name: '{{ item }}'
+    enabled: yes
+    state: started
+  with_items: 
+    - glusterd 
+    - glusterfsd
+
+- name: 1st host associate other peers
+  command: gluster peer probe {{ item }}
+  with_items:
+    - "{{ groups['glusterfs_cluster'] }}"
+  when: 
+    - inventory_hostname == groups['glusterfs_cluster'][0]
+
+- include: docker_config.yml
+  when: 
+    - '"docker" in extra_modules'

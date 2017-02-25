@@ -1,0 +1,12 @@
+---
+# defaults file for ansible-role-glusterfs
+
+# iptables configuration file
+iptables_config: "/etc/sysconfig/iptables"
+
+extra_modules: []
+# use root to force gluster on the root partition
+gluster_force_root_partition: true
+gluster_volumes:
+    - /glusterfs/brik1/gv0
+    

@@ -1,0 +1,20 @@
+---
+- name: Enabling GlusterFS Repo
+  yum: 
+    name: centos-release-gluster38
+    state: installed
+  environment:
+    http_proxy: "{{ proxy }}"
+    https_proxy: "{{ proxy }}"
+    
+- name: Install glusterfs server
+  yum: name='{{ item }}' state=installed
+  environment:
+    http_proxy: "{{ proxy }}"
+    https_proxy: "{{ proxy }}"
+  tags: yum
+  with_items:
+    - glusterfs
+    - glusterfs-libs 
+    - glusterfs-server
+

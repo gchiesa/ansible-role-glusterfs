@@ -1,0 +1,39 @@
+--- 
+- name: allocate the glusterfs volumes
+  file: 
+    path: "{{ item|dirname }}"
+    state: directory
+    recurse: yes
+  with_items:
+    - "{{ gluster_volumes }}"
+
+- name: getting volume list
+  command: gluster volume list
+  register: gluster_volume_list 
+
+- name: create volume on brik1
+  command: >
+    gluster volume create {{ gluster_volumes[0]|basename }} \
+    replica {{ groups['glusterfs_cluster']|length }} \
+    {% for hostname in groups['glusterfs_cluster'] %}
+        {{ hostname }}:{{ gluster_volumes[0] }} \
+    {% endfor %}
+    {% if gluster_force_root_partition == True %}
+        force 
+    {% else %}
+        ;
+    {% endif %}
+  when: 
+    - inventory_hostname == groups['glusterfs_cluster'][0]
+    - gluster_volumes[0]|basename not in gluster_volume_list.stdout_lines
+
+- name: start the volume
+  command: >
+     gluster volume start {{ gluster_volumes[0]|basename }}
+  when: 
+    - inventory_hostname == groups['glusterfs_cluster'][0]
+    - gluster_volumes[0]|basename not in gluster_volume_list.stdout_lines
+
+- name: save the fact gluster_docker_volume
+  set_fact:
+    gluster_docker_volume: "{{ gluster_volumes[0]|basename }}"
