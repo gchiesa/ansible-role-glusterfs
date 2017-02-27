@@ -10,7 +10,7 @@
     state: started
   with_items: 
     - glusterd 
-    - glusterfsd
+    # - glusterfsd
 
 - name: 1st host associate other peers
   command: gluster peer probe {{ item }}
