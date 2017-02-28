@@ -6,9 +6,28 @@
   environment:
     http_proxy: "{{ proxy }}"
     https_proxy: "{{ proxy }}"
-    
+  when:
+    - ansible_distribution == 'CentOS'
+
+- name: Enabling GlusterFS Repo (AMI AWS)
+  copy: 
+    src: gluster6.repo
+    dest: /etc/yum.repos.d/glusterfs.repo
+  when:
+    - ansible_distribution == 'Amazon'
+
+- name: Enabling GlusterFS Repo (AMI AWS)
+  copy: 
+    src: gluster7.repo
+    dest: /etc/yum.repos.d/glusterfs.repo
+  when:
+    - ansible_distribution == 'RedHat'
+
 - name: Install glusterfs server
-  yum: name='{{ item }}' state=installed
+  yum: 
+    name: '{{ item }}' 
+    state: installed
+    update_cache: yes
   environment:
     http_proxy: "{{ proxy }}"
     https_proxy: "{{ proxy }}"
